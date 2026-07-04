@@ -1,0 +1,520 @@
+/* ----- reset & base ----- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: none;
+    transition: background 0.5s ease, color 0.4s ease;
+    background: var(--bg-body);
+    color: var(--text-primary);
+    padding: 1.5rem;
+}
+
+/* ----- light / dark themes ----- */
+:root {
+    /* dark theme (default) */
+    --bg-body: #0a0a0a;
+    --bg-calc: rgba(16, 16, 18, 0.85);
+    --bg-display: rgba(8, 8, 10, 0.6);
+    --bg-btn-number: rgba(30, 30, 35, 0.7);
+    --bg-btn-number-hover: rgba(45, 45, 52, 0.9);
+    --bg-btn-operator: rgba(212, 180, 140, 0.12);
+    --bg-btn-operator-hover: rgba(212, 180, 140, 0.25);
+    --bg-btn-equals: linear-gradient(135deg, #d4b48c, #b08060);
+    --bg-btn-equals-hover: linear-gradient(135deg, #e0c4a0, #c09070);
+    --bg-btn-clear: rgba(200, 80, 80, 0.15);
+    --bg-btn-clear-hover: rgba(200, 80, 80, 0.3);
+    --text-primary: #ece8e0;
+    --text-secondary: #8a8078;
+    --text-muted: #6a6058;
+    --text-display: #f5f0ea;
+    --text-expression: rgba(236, 232, 224, 0.4);
+    --border-color: rgba(212, 180, 140, 0.08);
+    --border-hover: rgba(212, 180, 140, 0.2);
+    --accent: #d4b48c;
+    --accent-glow: rgba(212, 180, 140, 0.08);
+    --shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+    --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.4);
+    --glow-color: rgba(212, 180, 140, 0.02);
+    --btn-shadow: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] {
+    --bg-body: #f0ebe5;
+    --bg-calc: rgba(255, 252, 248, 0.9);
+    --bg-display: rgba(245, 240, 235, 0.7);
+    --bg-btn-number: rgba(235, 230, 225, 0.7);
+    --bg-btn-number-hover: rgba(220, 215, 210, 0.9);
+    --bg-btn-operator: rgba(176, 128, 96, 0.08);
+    --bg-btn-operator-hover: rgba(176, 128, 96, 0.18);
+    --bg-btn-equals: linear-gradient(135deg, #b08060, #906a50);
+    --bg-btn-equals-hover: linear-gradient(135deg, #c09070, #a07a60);
+    --bg-btn-clear: rgba(200, 80, 80, 0.1);
+    --bg-btn-clear-hover: rgba(200, 80, 80, 0.2);
+    --text-primary: #1a1614;
+    --text-secondary: #5a5048;
+    --text-muted: #8a8078;
+    --text-display: #1a1614;
+    --text-expression: rgba(26, 22, 20, 0.3);
+    --border-color: rgba(60, 50, 40, 0.08);
+    --border-hover: rgba(60, 50, 40, 0.15);
+    --accent: #b08060;
+    --accent-glow: rgba(176, 128, 96, 0.06);
+    --shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.1);
+    --glow-color: rgba(176, 128, 96, 0.03);
+    --btn-shadow: rgba(0, 0, 0, 0.05);
+}
+
+/* ----- custom cursor ----- */
+.cursor-dot {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: difference;
+}
+
+.cursor-ring {
+    position: fixed;
+    width: 32px;
+    height: 32px;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease, border-color 0.3s, opacity 0.3s;
+    backdrop-filter: blur(2px);
+    opacity: 0.3;
+}
+
+.cursor-dot.active {
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+}
+.cursor-ring.active {
+    width: 50px;
+    height: 50px;
+    border-color: var(--accent);
+    opacity: 0.6;
+}
+
+/* ----- theme toggle ----- */
+.theme-toggle {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 9999;
+    background: var(--bg-calc);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-hover);
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1) rotate(15deg);
+    border-color: var(--accent);
+    box-shadow: 0 0 30px var(--accent-glow);
+}
+
+/* ----- calculator wrapper ----- */
+.calculator-wrapper {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.calculator-container {
+    width: 100%;
+    background: var(--bg-calc);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 2.5rem 1rem 2.5rem 1rem;
+    padding: 1.8rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* asymmetric glow border */
+.calculator-container::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: conic-gradient(from 180deg at 50% 50%, 
+        transparent 0%, 
+        var(--accent) 10%, 
+        transparent 20%, 
+        transparent 80%, 
+        var(--accent) 90%, 
+        transparent 100%);
+    opacity: 0.05;
+    z-index: -1;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+    padding: 1px;
+}
+
+/* ----- header ----- */
+.calc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    margin-bottom: 1.2rem;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+    clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%);
+}
+
+.calc-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+}
+
+.calc-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.calc-version {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--border-color);
+    border-radius: 2rem;
+    font-weight: 400;
+}
+
+/* ----- display ----- */
+.calc-display {
+    background: var(--bg-display);
+    border-radius: 1.5rem 0.5rem 1.5rem 0.5rem;
+    padding: 1.5rem 1.8rem;
+    margin-bottom: 1.5rem;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* display glow effect */
+.calc-display::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 70% 30%, var(--glow-color), transparent 70%);
+    pointer-events: none;
+    transition: 0.6s;
+}
+
+.display-expression {
+    font-size: 0.85rem;
+    color: var(--text-expression);
+    min-height: 1.5rem;
+    text-align: right;
+    width: 100%;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    transition: all 0.3s;
+    word-break: break-all;
+}
+
+.display-result {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-display);
+    line-height: 1.1;
+    text-align: right;
+    width: 100%;
+    transition: all 0.2s;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.02em;
+}
+
+/* ----- button grid (asymmetric) ----- */
+.calc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.8rem;
+    margin-top: 0.5rem;
+    position: relative;
+}
+
+/* asymmetric button variations */
+.btn {
+    padding: 1rem 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 1.2rem 0.4rem 1.2rem 0.4rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px var(--btn-shadow);
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* asymmetric border radius variations */
+.btn:nth-child(4n+1) {
+    border-radius: 0.4rem 1.2rem 0.4rem 1.2rem;
+}
+.btn:nth-child(4n+2) {
+    border-radius: 1.2rem 0.4rem 1.2rem 0.4rem;
+}
+.btn:nth-child(4n+3) {
+    border-radius: 0.8rem 1.6rem 0.8rem 1.6rem;
+}
+.btn:nth-child(4n+4) {
+    border-radius: 1.6rem 0.8rem 1.6rem 0.8rem;
+}
+
+/* hover effect with magnetic pull */
+.btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px var(--btn-shadow);
+}
+
+.btn:active {
+    transform: scale(0.94);
+    transition-duration: 0.05s;
+}
+
+/* number buttons */
+.btn-number {
+    background: var(--bg-btn-number);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-number:hover {
+    background: var(--bg-btn-number-hover);
+    border-color: var(--border-hover);
+}
+
+/* operator buttons */
+.btn-operator {
+    background: var(--bg-btn-operator);
+    color: var(--accent);
+    border: 1px solid var(--border-color);
+}
+
+.btn-operator:hover {
+    background: var(--bg-btn-operator-hover);
+    border-color: var(--accent);
+    box-shadow: 0 0 30px var(--accent-glow);
+}
+
+/* equals button */
+.btn-equals {
+    background: var(--bg-btn-equals);
+    color: #f5f0ea;
+    border: none;
+    grid-column: span 1;
+    box-shadow: 0 4px 20px rgba(176, 128, 96, 0.2);
+}
+
+.btn-equals:hover {
+    background: var(--bg-btn-equals-hover);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(176, 128, 96, 0.3);
+}
+
+/* clear button */
+.btn-clear {
+    background: var(--bg-btn-clear);
+    color: #e08080;
+    border: 1px solid rgba(200, 80, 80, 0.1);
+}
+
+.btn-clear:hover {
+    background: var(--bg-btn-clear-hover);
+    border-color: rgba(200, 80, 80, 0.2);
+    box-shadow: 0 0 30px rgba(200, 80, 80, 0.05);
+}
+
+/* zero button spans 2 columns */
+.zero-btn {
+    grid-column: span 2;
+}
+
+/* button ripple effect (JS) */
+.btn-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(212, 180, 140, 0.2);
+    transform: scale(0);
+    animation: ripple 0.6s ease-out;
+    pointer-events: none;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+[data-theme="light"] .btn-ripple {
+    background: rgba(176, 128, 96, 0.15);
+}
+
+/* ----- footer ----- */
+.calc-footer {
+    margin-top: 1.2rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.footer-text {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+/* ----- scroll & selection ----- */
+::selection {
+    background: var(--accent);
+    color: var(--bg-body);
+}
+
+::-webkit-scrollbar {
+    width: 4px;
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 20px;
+}
+
+/* ----- responsive ----- */
+@media (max-width: 480px) {
+    .calculator-container {
+        padding: 1.2rem;
+        border-radius: 2rem 0.8rem 2rem 0.8rem;
+    }
+    .calc-display {
+        padding: 1.2rem 1.4rem;
+        min-height: 100px;
+    }
+    .display-result {
+        font-size: 2.4rem;
+    }
+    .btn {
+        height: 56px;
+        font-size: 1rem;
+        padding: 0.8rem 0.3rem;
+    }
+    .calc-grid {
+        gap: 0.6rem;
+    }
+    .theme-toggle {
+        top: 1rem;
+        right: 1rem;
+        width: 38px;
+        height: 38px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .calculator-container {
+        padding: 0.8rem;
+    }
+    .btn {
+        height: 48px;
+        font-size: 0.85rem;
+        border-radius: 0.8rem 0.2rem 0.8rem 0.2rem;
+    }
+    .display-result {
+        font-size: 2rem;
+    }
+    .calc-display {
+        padding: 0.8rem 1rem;
+        min-height: 80px;
+    }
+}
+
+/* ----- accessibility ----- */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+    .btn:hover {
+        transform: none !important;
+    }
+    .btn:active {
+        transform: scale(0.96) !important;
+    }
+}
+
+/* touch device cursor fallback */
+@media (hover: none) {
+    body {
+        cursor: auto !important;
+    }
+    .cursor-dot,
+    .cursor-ring {
+        display: none !important;
+    }
+}

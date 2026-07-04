@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" crossorigin="anonymous" />
+    <link rel="stylesheet" href="calculator.css" />
+</head>
+<body>
+    <!-- custom cursor -->
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <!-- theme toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="calculator-wrapper">
+        <div class="calculator-container">
+            <!-- header with asymmetric clip-path -->
+            <div class="calc-header">
+                <span class="calc-brand">✦</span>
+                <span class="calc-version"></span>
+            </div>
+
+            <!-- display with glow effect -->
+            <div class="calc-display" id="display">
+                <div class="display-expression" id="expression"></div>
+                <div class="display-result" id="result">0</div>
+            </div>
+
+            <!-- button grid with asymmetric layout -->
+            <div class="calc-grid" id="calcGrid">
+                <!-- Row 1 -->
+                <button class="btn btn-clear" data-action="clear">AC</button>
+                <button class="btn btn-operator" data-action="operator" data-value="%">%</button>
+                <button class="btn btn-operator" data-action="operator" data-value="/">÷</button>
+                <button class="btn btn-operator" data-action="operator" data-value="*">×</button>
+
+                <!-- Row 2 -->
+                <button class="btn btn-number" data-action="number" data-value="7">7</button>
+                <button class="btn btn-number" data-action="number" data-value="8">8</button>
+                <button class="btn btn-number" data-action="number" data-value="9">9</button>
+                <button class="btn btn-operator" data-action="operator" data-value="-">−</button>
+
+                <!-- Row 3 -->
+                <button class="btn btn-number" data-action="number" data-value="4">4</button>
+                <button class="btn btn-number" data-action="number" data-value="5">5</button>
+                <button class="btn btn-number" data-action="number" data-value="6">6</button>
+                <button class="btn btn-operator" data-action="operator" data-value="+">+</button>
+
+                <!-- Row 4 -->
+                <button class="btn btn-number" data-action="number" data-value="1">1</button>
+                <button class="btn btn-number" data-action="number" data-value="2">2</button>
+                <button class="btn btn-number" data-action="number" data-value="3">3</button>
+                <button class="btn btn-equals" data-action="equals">=</button>
+
+                <!-- Row 5 -->
+                <button class="btn btn-number zero-btn" data-action="number" data-value="0">0</button>
+                <button class="btn btn-number" data-action="decimal">.</button>
+                <button class="btn btn-operator" data-action="operator" data-value="^">x²</button>
+                <button class="btn btn-operator" data-action="operator" data-value="√">√</button>
+            </div>
+
+            <!-- footer -->
+            <div class="calc-footer">
+                <span class="footer-text">2024</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="calculator.js"></script>
+</body>
+</html>
